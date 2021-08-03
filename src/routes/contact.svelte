@@ -1,6 +1,7 @@
 <script>
     import Input from "../components/Input.svelte";
     import Layout from "../components/Layout.svelte";
+    import { validateEmail, hasCharacters } from "../lib/validate";
 
     let nameField = {
         value: "",
@@ -10,28 +11,34 @@
         value: "",
         errorMessage: ""
     };
-    let responseMessage = {
+    let response = {
         success: true,
         message: ""
     }
 
     const handleSubmit = (e) => {
+        // Resetting error messages
         nameField.errorMessage = ""
         emailField.errorMessage = ""
+        response.message = ""
 
         e.preventDefault();
 
-        if ( nameField.value.trim() == "") {
+        let hasError = false;
+
+        if ( !hasCharacters(nameField.value) ) {
             nameField.errorMessage = "Please enter your name";
+            hasError = true;
         }
-        if ( emailField.value.trim() == "" ) {
+        if ( !hasCharacters(emailField.value) ) {
             emailField.errorMessage = "Please enter your email";
-            return;
+            hasError = true;
+        } else if ( !validateEmail(emailField.value) ) {
+            emailField.errorMessage = "Invalid Email";
+            hasError = true;
         }
 
-        if ( !validateEmail(emailField.value) ) {
-            emailField.errorMessage = "Invalid Email";
-        }
+        if ( hasError ) return;
 
         fetch(`/api/contact`, {
             method: "POST",
@@ -45,27 +52,23 @@
         })
         .then(res=>res.json())
         .then(res=> {
-            responseMessage = {
+            response = {
                 success: true,
                 message: res.message
             }
         }).catch(err=> {
-            responseMessage = {
+            response = {
                 success: false,
                 message: "Error submitting the form."
             }
         })
     }
-
-    const validateEmail = (email) => {
-        return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
-    }
 </script>
 
 <Layout _title="Contact">
-    {#if responseMessage.message != "" }
-        <div class="text-white rounded-md text-center py-2 my-5" class:bg-green-400={responseMessage.success} class:bg-red-400={!responseMessage.success}>
-            {responseMessage.message}
+    {#if response.message != "" }
+        <div class="text-white rounded-md text-center py-2 my-5" class:bg-green-400={response.success} class:bg-red-400={!response.success}>
+            {response.message}
         </div>
     {/if}
     <Input name="Full Name" field={nameField}/>
