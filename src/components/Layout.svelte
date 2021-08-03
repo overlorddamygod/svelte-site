@@ -6,7 +6,7 @@
 	<title>{_title}</title>
 </svelte:head>
 
-<div class="layout w-3/4 m-auto">
+<div class="layout w-11/12 md:w-3/4 m-auto">
     <div class="header flex justify-between items-center py-7 border-b mb-7">
         <a href="./"><h1 class="text-3xl">Logo</h1></a>
     </div>
