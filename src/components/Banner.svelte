@@ -6,7 +6,7 @@
 
 <style>
     .banner {
-        background-image: url("banner.jpg");
+        background-image: url("../../../banner.jpg");
         background-color: #0A1816;
     }
 </style>
